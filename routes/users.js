@@ -5,13 +5,16 @@ const path = require("path");
 // The path to our json file
 const dataPath = path.join(__dirname, "../data/users.json");
 
+function checkError(err, res) {
+  if (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
 router.get("/users/:id", (req, res) => {
   fs.readFile(dataPath, "utf8", (err, file) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Internal Server Error");
-      return;
-    }
+    checkError(err, res);
 
     const { id } = req.params;
     const users = JSON.parse(file);
@@ -23,6 +26,15 @@ router.get("/users/:id", (req, res) => {
     }
 
     res.send(user);
+  });
+});
+
+router.get("/users", (req, res) => {
+  fs.readFile(dataPath, "utf8", (err, file) => {
+    checkError(err, res);
+
+    const users = JSON.parse(file);
+    res.send(users);
   });
 });
 
