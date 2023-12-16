@@ -12,7 +12,9 @@ module.exports.catchError = (err, res) => {
       res.status(400).send({ message: "Invalid ID" });
       return;
     case "DocumentNotFoundError":
-      res.status(404).send({ message: `Provided ID not found` });
+      res.status(404).send({
+        message: `Document not found, maybe try creating them in the database first?`,
+      });
       return;
     default:
       console.error(err);
