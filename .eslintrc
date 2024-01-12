@@ -9,6 +9,9 @@
     "object-shorthand": "off",
     "class-methods-use-this": "off"
   },
+  "env": {
+    "jest": true
+  },
   "extends": ["airbnb-base", "prettier", "plugin:node/recommended"],
   "plugins": ["prettier"]
 }
