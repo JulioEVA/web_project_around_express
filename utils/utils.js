@@ -26,8 +26,13 @@ module.exports.catchError = (err, res) => {
  * Checks if a string is a valid URL.
  * @param {*} value The string to check
  */
-module.exports.testRegex = function (value) {
+module.exports.validateURL = function (value) {
   const urlRegex =
     /^(https?:\/\/)[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?& //=]*)$/;
   return urlRegex.test(value);
+};
+
+module.exports.validateEmail = function (value) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(value);
 };
