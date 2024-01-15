@@ -1,30 +1,28 @@
+const ValidationError = require("../errors/ValidationError");
+const DocumentNotFoundError = require("../errors/DocumentNotFoundError");
+const ForbiddenError = require("../errors/ForbiddenError");
+const IncorrectCredentialsError = require("../errors/IncorrectCredentialsError");
+const CastError = require("../errors/CastError");
+
 /**
  * Checks the nature of an error and sends the appropriate response.
  * @param {*} err The error object
  * @param {*} res The response object
  */
-module.exports.catchError = (err, res) => {
+module.exports.catchError = (err) => {
   switch (err.name) {
     case "ValidationError":
-      res.status(400).send({ message: err.message });
-      return;
+      return new ValidationError(err.message);
     case "CastError":
-      res.status(400).send({ message: "Invalid ID" });
-      return;
+      return new CastError("Invalid ID");
     case "IncorrectCredentialsError":
-      res.status(401).send({ message: err.message });
-      return;
+      return new IncorrectCredentialsError(err.message);
     case "ForbiddenError":
-      res.status(403).send({ message: err.message });
-      return;
+      return new ForbiddenError(err.message);
     case "DocumentNotFoundError":
-      res.status(404).send({
-        message: `Document was not found, maybe try creating them in the database first?`,
-      });
-      return;
+      return new DocumentNotFoundError(err.message);
     default:
-      console.error(err);
-      res.status(500).send("Internal Server Error");
+      return err;
   }
 };
 
