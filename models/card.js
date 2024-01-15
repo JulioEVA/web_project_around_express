@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { testRegex } = require("../utils/utils");
+const { validateURL } = require("../utils/utils");
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -12,7 +12,7 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (value) => testRegex(value),
+      validator: (value) => validateURL(value),
       message: "Invalid avatar URL",
     },
   },
