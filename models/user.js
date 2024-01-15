@@ -1,18 +1,71 @@
 const mongoose = require("mongoose");
-const { celebrate, Joi } = require("celebrate");
+const bcrypt = require("bcryptjs");
 const { validateURL, validateEmail } = require("../utils/utils");
 
-const userSchema = celebrate(
-  {
-    body: Joi.object().keys({
-      name: Joi.string().min(2).max(30),
-      about: Joi.string().min(2).max(30),
-      avatar: Joi.string().custom(validateURL),
-      email: Joi.string().required().custom(validateEmail),
-      password: Joi.string().required().min(6),
-    }),
+const userSchema = mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    minlength: 2,
+    maxlength: 30,
   },
-  { abortEarly: false },
-);
+  about: {
+    type: String,
+    required: true,
+    minlength: 2,
+    maxlength: 30,
+  },
+  avatar: {
+    type: String,
+    validate: {
+      validator: validateURL,
+      message: "Invalid URL format",
+    },
+  },
+  email: {
+    type: String,
+    required: true,
+    validate: {
+      validator: validateEmail,
+      message: "Invalid email format",
+    },
+  },
+  password: {
+    type: String,
+    required: true,
+    select: false,
+  },
+});
+
+/**
+ * Finds an user by its email and password.
+ * @param {*} email The email of the user
+ * @param {*} password The password of the user
+ * @returns The user
+ */
+userSchema.statics.findUserByCredentials = function findUserByCredentials(
+  email,
+  password,
+) {
+  return this.findOne({ email })
+    .select("+password")
+    .then((user) => {
+      if (!user) {
+        const err = new Error("Incorrect email or password");
+        err.name = "IncorrectCredentialsError";
+        return Promise.reject(err);
+      }
+
+      return bcrypt.compare(password, user.password).then((matched) => {
+        if (!matched) {
+          const err = new Error("Incorrect email or password");
+          err.name = "IncorrectCredentialsError";
+          return Promise.reject(err);
+        }
+
+        return user;
+      });
+    });
+};
 
 module.exports = mongoose.model("user", userSchema);
