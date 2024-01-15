@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { catchError } = require("../utils/utils");
+const ForbiddenError = require("../errors/ForbiddenError");
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -10,18 +11,15 @@ const { NODE_ENV, JWT_SECRET } = process.env;
  * @param {*} req The request object
  * @param {*} res The response object
  */
-async function validateUserPermissions(req, res) {
+async function validateUserPermissions(req, res, next) {
   return User.findById(req.user._id)
     .orFail()
     .then((user) => {
       if (user._id !== req.user._id) {
-        res.status(403).send({ message: "Forbidden" });
-        const err = new Error("Forbidden");
-        err.message = "ForbiddenError";
-        throw err;
+        throw new ForbiddenError("You can only update your own profile");
       }
     })
-    .catch((err) => catchError(err, res));
+    .catch((err) => next(catchError(err)));
 }
 
 /**
@@ -29,14 +27,14 @@ async function validateUserPermissions(req, res) {
  * @param {*} req The request object
  * @param {*} res The response object
  */
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
   User.findById(userId)
     .orFail()
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => catchError(err, res));
+    .catch((err) => next(catchError(err)));
 };
 
 /**
@@ -44,13 +42,13 @@ module.exports.getUser = (req, res) => {
  * @param {*} req The request object
  * @param {*} res The response object
  */
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .orFail()
     .then((users) => {
       res.send(users);
     })
-    .catch((err) => catchError(err, res));
+    .catch((err) => next(catchError(err)));
 };
 
 /**
@@ -58,7 +56,7 @@ module.exports.getUsers = (req, res) => {
  * @param {*} req The request object
  * @param {*} res The response object
  */
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name = "Jacques Cousteau",
     about = "Sailor, researcher",
@@ -80,9 +78,9 @@ module.exports.createUser = (req, res) => {
         .then((user) => {
           res.send(user);
         })
-        .catch((err) => catchError(err, res));
+        .catch((err) => next(catchError(err)));
     })
-    .catch((err) => catchError(err, res));
+    .catch((err) => next(catchError(err)));
 };
 
 /**
@@ -90,10 +88,10 @@ module.exports.createUser = (req, res) => {
  * @param {*} req The request object
  * @param {*} res The response object
  */
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
 
-  validateUserPermissions(req, res).catch((err) => catchError(err, res));
+  validateUserPermissions(req, res).catch((err) => next(catchError(err)));
 
   User.findByIdAndUpdate(
     req.user._id,
@@ -104,7 +102,7 @@ module.exports.updateUser = (req, res) => {
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => catchError(err, res));
+    .catch((err) => next(catchError(err)));
 };
 
 /**
@@ -112,10 +110,10 @@ module.exports.updateUser = (req, res) => {
  * @param {*} req The request object
  * @param {*} res The response object
  */
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
-  validateUserPermissions(req, res).then((err) => catchError(err, res));
+  validateUserPermissions(req, res).then((err) => next(catchError(err)));
 
   User.findByIdAndUpdate(
     req.user._id,
@@ -126,7 +124,7 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => catchError(err, res));
+    .catch((err) => next(catchError(err)));
 };
 
 /**
@@ -134,7 +132,7 @@ module.exports.updateAvatar = (req, res) => {
  * @param {*} req The request object
  * @param {*} res The response object
  */
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   User.findUserByCredentials(email, password)
@@ -149,7 +147,7 @@ module.exports.login = (req, res) => {
         ),
       });
     })
-    .catch((err) => catchError(err, res));
+    .catch((err) => next(catchError(err)));
 };
 
 /**
@@ -157,11 +155,11 @@ module.exports.login = (req, res) => {
  * @param {*} req The request object
  * @param {*} res The response object
  */
-module.exports.getMe = (req, res) => {
+module.exports.getMe = (req, res, next) => {
   User.findById(req.user._id)
     .orFail()
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => catchError(err, res));
+    .catch((err) => next(catchError(err)));
 };

@@ -1,3 +1,4 @@
+const ForbiddenError = require("../errors/ForbiddenError");
 const Card = require("../models/card");
 const { catchError } = require("../utils/utils");
 
@@ -6,13 +7,13 @@ const { catchError } = require("../utils/utils");
  * @param {*} req The request object
  * @param {*} res The response object
  */
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .orFail()
     .then((cards) => {
       res.send(cards);
     })
-    .catch((err) => catchError(err, res));
+    .catch((err) => next(catchError(err)));
 };
 
 /**
@@ -20,14 +21,14 @@ module.exports.getCards = (req, res) => {
  * @param {*} req The request object
  * @param {*} res The response object
  */
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link, owner } = req.body;
 
   Card.create({ name, link, owner })
     .then((card) => {
       res.send(card);
     })
-    .catch((err) => catchError(err, res));
+    .catch((err) => next(catchError(err)));
 };
 
 /**
@@ -35,23 +36,23 @@ module.exports.createCard = (req, res) => {
  * @param {*} req The request object
  * @param {*} res The response object
  */
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   Card.findById(cardId)
     .orFail()
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
-        res.status(403).send({ message: "Forbidden" });
+        throw new ForbiddenError("You can only delete your own cards");
       }
     })
-    .catch((err) => catchError(err, res));
+    .catch((err) => next(catchError(err)));
 
   Card.findByIdAndDelete(cardId)
     .orFail()
     .then((card) => {
       res.send(card);
     })
-    .catch((err) => catchError(err, res));
+    .catch((err) => next(catchError(err)));
 };
 
 /**
@@ -59,7 +60,7 @@ module.exports.deleteCard = (req, res) => {
  * @param {*} req The request object
  * @param {*} res The response object
  */
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   const { cardId } = req.params;
   Card.findByIdAndUpdate(
     cardId,
@@ -70,7 +71,7 @@ module.exports.likeCard = (req, res) => {
     .then((card) => {
       res.send(card);
     })
-    .catch((err) => catchError(err, res));
+    .catch((err) => next(catchError(err)));
 };
 
 /**
@@ -78,7 +79,7 @@ module.exports.likeCard = (req, res) => {
  * @param {*} req The request object
  * @param {*} res The response object
  */
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   const { cardId } = req.params;
   Card.findByIdAndUpdate(
     cardId,
@@ -89,5 +90,5 @@ module.exports.dislikeCard = (req, res) => {
     .then((card) => {
       res.send(card);
     })
-    .catch((err) => catchError(err, res));
+    .catch((err) => next(catchError(err)));
 };
