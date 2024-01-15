@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv").config();
 const { errors } = require("celebrate");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 const cards = require("./routes/cards");
 const users = require("./routes/users");
 const { login, createUser } = require("./controllers/users");
@@ -45,6 +46,8 @@ app.use((req, res, next) => {
 mongoose.connect("mongodb://localhost:27017/aroundb");
 app.use(express.json());
 
+app.use(requestLogger);
+
 app.post("/signin", login);
 app.post("/signup", createUser);
 
@@ -52,6 +55,8 @@ app.use(auth);
 
 app.use("/cards", cards);
 app.use("/users", users);
+
+app.use(errorLogger);
 
 app.use(errors());
 
