@@ -37,6 +37,15 @@ module.exports.createCard = (req, res) => {
  */
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
+  Card.findById(cardId)
+    .orFail()
+    .then((card) => {
+      if (card.owner.toString() !== req.user._id) {
+        res.status(403).send({ message: "Forbidden" });
+      }
+    })
+    .catch((err) => catchError(err, res));
+
   Card.findByIdAndDelete(cardId)
     .orFail()
     .then((card) => {
