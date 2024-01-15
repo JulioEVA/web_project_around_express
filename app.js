@@ -58,6 +58,13 @@ app.use(errors());
 app.use((req, res) => {
   res.status(404).send({ message: "Requested resource not found" });
 });
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({
+    message:
+      statusCode === 500 ? "Se ha producido un error en el servidor" : message,
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
