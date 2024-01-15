@@ -11,9 +11,15 @@ module.exports.catchError = (err, res) => {
     case "CastError":
       res.status(400).send({ message: "Invalid ID" });
       return;
+    case "IncorrectCredentialsError":
+      res.status(401).send({ message: err.message });
+      return;
+    case "ForbiddenError":
+      res.status(403).send({ message: err.message });
+      return;
     case "DocumentNotFoundError":
       res.status(404).send({
-        message: `Document not found, maybe try creating them in the database first?`,
+        message: `Document was not found, maybe try creating them in the database first?`,
       });
       return;
     default:
