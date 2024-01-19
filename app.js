@@ -17,8 +17,12 @@ app.use(express.json());
 
 app.use(requestLogger);
 
-app.use(cors());
-app.options("*", cors());
+app.use(
+  cors({
+    origin: "https://www.around.traveling.com.ar",
+    credentials: true,
+  }),
+);
 
 app.post("/signin", login);
 app.post("/signup", createUser);
