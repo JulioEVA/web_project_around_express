@@ -20,7 +20,6 @@ app.use(requestLogger);
 app.use(
   cors({
     origin: "https://www.around.traveling.com.ar",
-    credentials: true,
   }),
 );
 
