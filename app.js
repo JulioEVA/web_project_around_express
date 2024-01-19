@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv").config();
 const { errors } = require("celebrate");
+const cors = require("cors");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 const cards = require("./routes/cards");
 const users = require("./routes/users");
@@ -16,41 +17,8 @@ app.use(express.json());
 
 app.use(requestLogger);
 
-const allowedCors = [
-  "https://around.traveling.com.ar",
-  "http://around.traveling.com.ar",
-  "https://www.around.traveling.com.ar",
-  "http://www.around.traveling.com.ar",
-  "https://api.around.traveling.com.ar",
-  "localhost:3000",
-];
-
-/** Middleware to allow cross-origin requests */
-app.use((req, res, next) => {
-  const { origin } = req.headers;
-  const { method } = req; // Save the HTTP method to the corresponding variable
-
-  next();
-  if (allowedCors.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-  }
-
-  // Default value for the Access-Control-Methods header (allowing all request types)
-  const DEFAULT_ALLOWED_METHODS = "GET,HEAD,PUT,PATCH,POST,DELETE";
-  // Save the original request headers list
-  const requestHeaders = req.headers["access-control-request-headers"];
-  // If this is a preflight request, add the required headers
-  if (method === "OPTIONS") {
-    // Allow cross-origin requests of any type (default)
-    res.header("Access-Control-Allow-Methods", DEFAULT_ALLOWED_METHODS);
-    // Allow cross-origin requests with these headers
-    res.header("Access-Control-Allow-Headers", requestHeaders);
-    // Finish processing the request and return the result to the client
-    return res.end();
-  }
-
-  return next();
-});
+app.use(cors());
+app.options("*", cors());
 
 app.post("/signin", login);
 app.post("/signup", createUser);
