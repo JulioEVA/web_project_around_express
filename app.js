@@ -10,26 +10,24 @@ const { login, createUser } = require("./controllers/users");
 const auth = require("./middlewares/auth");
 
 const app = express();
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 
 mongoose.connect("mongodb://localhost:27017/aroundb");
 app.use(express.json());
 
-app.use(requestLogger);
-
 app.use(
   cors({
-    origin: "https://www.around.traveling.com.ar",
+    origin: ["http://localhost:3000", "https://www.around.traveling.com.ar"],
   }),
 );
+
+app.use(requestLogger);
 
 app.post("/signin", login);
 app.post("/signup", createUser);
 
-app.use(auth);
-
-app.use("/cards", cards);
-app.use("/users", users);
+app.use("/cards", auth, cards);
+app.use("/users", auth, users);
 
 app.use(errorLogger);
 
@@ -42,7 +40,7 @@ app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res.status(statusCode).send({
     message:
-      statusCode === 500 ? "Se ha producido un error en el servidor" : message,
+      statusCode === 500 ? "An error has ocurred in the server" : message,
   });
 });
 
