@@ -134,17 +134,15 @@ module.exports.updateAvatar = (req, res, next) => {
  */
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-
   User.findUserByCredentials(email, password)
     .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id.toString() },
+        NODE_ENV === "production" ? JWT_SECRET : "dev-secret",
+        { expiresIn: "7d" },
+      );
       res.send({
-        token: jwt.sign(
-          { _id: user._id },
-          NODE_ENV === "production" ? JWT_SECRET : "dev-secret",
-          {
-            expiresIn: "7d",
-          },
-        ),
+        token,
       });
     })
     .catch((err) => next(catchError(err)));
@@ -156,8 +154,13 @@ module.exports.login = (req, res, next) => {
  * @param {*} res The response object
  */
 module.exports.getMe = (req, res, next) => {
-  User.findById(req.user._id)
+  console.log(req);
+  return User.findById(req.user._id)
     .orFail()
+    .then((data) => {
+      console.log("Response after getMe", data);
+      return data.json();
+    })
     .then((user) => {
       res.send(user);
     })
