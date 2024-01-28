@@ -20,9 +20,8 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
-app.use(cors());
 
-/* const allowedCors = [
+const allowedCors = [
   "https://www.around.traveling.com.ar",
   "http://www.around.traveling.com.ar",
   "https://around.traveling.com.ar",
@@ -31,15 +30,11 @@ app.use(cors());
 ];
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (allowedCors.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: allowedCors,
   }),
-); */
+);
+
+app.use(cors());
 
 app.options("*", cors());
 
