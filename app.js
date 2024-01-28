@@ -14,6 +14,12 @@ const { PORT = 3000 } = process.env;
 
 mongoose.connect("mongodb://localhost:27017/aroundb");
 app.use(express.json());
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
 app.use(cors());
 
 /* const allowedCors = [
@@ -23,15 +29,6 @@ app.use(cors());
   "http://around.traveling.com.ar",
   "http://localhost:3000",
 ];
-*/
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
-
-/*
 app.use(
   cors({
     origin: (origin, callback) => {
