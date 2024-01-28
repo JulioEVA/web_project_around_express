@@ -35,6 +35,8 @@ app.use(
   }),
 );
 
+app.options("*", cors());
+
 app.use(requestLogger);
 
 app.post("/signin", login);
