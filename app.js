@@ -18,8 +18,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "https://www.around.traveling.com.ar/*",
-      "https://www.around.traveling.com.ar/",
+      "^https://www.around.traveling.com.ar/(?:w+/?)*$",
       "http://localhost:3000",
     ],
   }),
