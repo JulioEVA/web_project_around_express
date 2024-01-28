@@ -15,9 +15,23 @@ const { PORT = 3000 } = process.env;
 mongoose.connect("mongodb://localhost:27017/aroundb");
 app.use(express.json());
 
+const allowedCors = [
+  "https://www.around.traveling.com.ar",
+  "http://www.around.traveling.com.ar",
+  "https://around.traveling.com.ar",
+  "http://around.traveling.com.ar",
+  "http://localhost:3000",
+];
+
 app.use(
   cors({
-    origin: "/^https://www.around.traveling.com.ar/(?:w+/?)*$/",
+    origin: (origin, callback) => {
+      if (allowedCors.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
   }),
 );
 
