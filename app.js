@@ -12,8 +12,17 @@ const auth = require("./middlewares/auth");
 const app = express();
 const { PORT = 3000 } = process.env;
 
-app.options('*', cors({origin: "http://localhost:3000"}));
-
+app.options(
+  "*",
+  cors({
+    // Define allowed origins, methods, and headers
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST, PATCH, PUT, DELETE, OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
+    credentials: true,
+  }),
+);
+/*
 app.use(
   cors({
     // Define allowed origins, methods, and headers
@@ -23,7 +32,7 @@ app.use(
     credentials: true,
   }),
 );
-
+*/
 mongoose.connect("mongodb://localhost:27017/aroundb");
 app.use(express.json());
 
