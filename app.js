@@ -18,6 +18,7 @@ app.use(
     origin: "*",
     methods: ["GET", "POST, PATCH, PUT, DELETE, OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
+    credentials: true,
   }),
 );
 
