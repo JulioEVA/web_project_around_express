@@ -22,7 +22,7 @@ app.options(
     credentials: true,
   }),
 );
-/*
+
 app.use(
   cors({
     // Define allowed origins, methods, and headers
@@ -32,7 +32,7 @@ app.use(
     credentials: true,
   }),
 );
-*/
+
 mongoose.connect("mongodb://localhost:27017/aroundb");
 app.use(express.json());
 
