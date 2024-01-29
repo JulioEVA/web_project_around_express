@@ -16,7 +16,7 @@ app.options(
   "*",
   cors({
     // Define allowed origins, methods, and headers
-    origin: "http://localhost:3000",
+    origin:"http://localhost:3000",
     methods: ["GET", "POST, PATCH, PUT, DELETE, OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
     credentials: true,
