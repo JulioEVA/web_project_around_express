@@ -154,7 +154,7 @@ module.exports.login = (req, res, next) => {
  * @param {*} res The response object
  */
 module.exports.getMe = (req, res, next) => {
-  return User.findById(req.user._id)
+  User.findById(req.user._id)
     .orFail()
     .then((data) => {
       console.log("Response after getMe", data);
