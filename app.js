@@ -12,10 +12,12 @@ const auth = require("./middlewares/auth");
 const app = express();
 const { PORT = 3000 } = process.env;
 
+app.options('*', cors({origin: "http://localhost:3000"}));
+
 app.use(
   cors({
     // Define allowed origins, methods, and headers
-    origin: "https://www.around.traveling.com.ar",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST, PATCH, PUT, DELETE, OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
     credentials: true,
