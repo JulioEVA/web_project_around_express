@@ -10,13 +10,12 @@ const {
   getMe,
 } = require("../controllers/users");
 
-function validateUserId(next) {
+function validateUserId() {
   celebrate({
     params: Joi.object().keys({
       userId: Joi.string().hex().length(24),
     }),
   });
-  next();
 }
 
 router.get("/:userId", validateUserId, getUser);
