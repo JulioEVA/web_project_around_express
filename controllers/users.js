@@ -154,6 +154,13 @@ module.exports.login = (req, res, next) => {
  * @param {*} res The response object
  */
 module.exports.getMe = (req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*"); // Allow requests from any origin
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS"); // Allow GET, POST, and OPTIONS requests
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept",
+  ); // Allow specific headers
+
   User.findById(req.user._id)
     .orFail()
     .then((data) => {
