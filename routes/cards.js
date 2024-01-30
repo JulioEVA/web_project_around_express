@@ -35,7 +35,7 @@ router.post(
           }
           return value;
         }),
-      owner: Joi.object().keys({
+      owner: Joi.string().keys({
         _id: Joi.string().hex().length(24),
       }),
     }),
