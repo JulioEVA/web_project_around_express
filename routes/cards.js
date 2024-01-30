@@ -35,9 +35,7 @@ router.post(
           }
           return value;
         }),
-      owner: Joi.object().keys({
-        _id: Joi.string().hex().length(24),
-      }),
+      owner: Joi.string().hex().length(24),
     }),
   }),
   createCard,
