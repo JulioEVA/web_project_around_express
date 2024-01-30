@@ -158,10 +158,7 @@ module.exports.getMe = (req, res, next) => {
     .orFail()
     .then((data) => {
       console.log("Response after getMe", data);
-      return data.json();
-    })
-    .then((user) => {
-      res.send(user);
+      res.send(data);
     })
     .catch((err) => next(catchError(err)));
 };
