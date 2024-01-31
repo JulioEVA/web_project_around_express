@@ -156,9 +156,9 @@ module.exports.login = (req, res, next) => {
 module.exports.getMe = (req, res, next) => {
   User.findById(req.user._id)
     .orFail()
-    .then((data) => {
-      console.log("Response after getMe", data);
-      res.send({ data });
+    .then((user) => {
+      console.log("Response after getMe", user);
+      res.send({ data: user });
     })
     .catch((err) => next(catchError(err)));
 };
