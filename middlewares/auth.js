@@ -39,9 +39,8 @@ module.exports = (req, res, next) => {
   } catch (err) {
     return handleAuthError(res);
   }
-  console.log(payload);
   req.user = payload;
 
-  next();
+  next(req, res);
   return true;
 };
