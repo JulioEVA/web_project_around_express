@@ -23,8 +23,10 @@ app.use(requestLogger);
 app.post("/signin", login);
 app.post("/signup", createUser);
 
-app.use("/cards", auth, cards);
-app.use("/users", auth, users);
+app.use(auth);
+
+app.use("/cards", cards);
+app.use("/users", users);
 
 app.use(errorLogger);
 
