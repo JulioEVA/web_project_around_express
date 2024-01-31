@@ -19,9 +19,7 @@ function validateUserId() {
 }
 
 router.get("/:userId", validateUserId, getUser);
-router.get("/me", () => {
-  console.log("getMe");
-});
+router.get("/me", getMe);
 router.get("/", getUsers);
 router.patch(
   "/me",
