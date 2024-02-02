@@ -25,8 +25,6 @@ app.use(requestLogger);
 app.post("/signin", login);
 app.post("/signup", createUser);
 
-app.use(auth);
-
 app.use("/cards", cards);
 app.use("/users", users);
 

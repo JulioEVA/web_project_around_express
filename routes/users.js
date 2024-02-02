@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { celebrate, Joi } = require("celebrate");
 const { validateURL } = require("../utils/utils");
+const auth = require("../middlewares/auth");
 
 const {
   getUser,
@@ -10,6 +11,7 @@ const {
   getMe,
 } = require("../controllers/users");
 
+console.log("Router USERS!");
 function validateUserId() {
   celebrate({
     params: Joi.object().keys({
@@ -17,9 +19,9 @@ function validateUserId() {
     }),
   });
 }
-
 router.get("/:userId", validateUserId, getUser);
-router.get("/me", getMe);
+router.get("/myInfo", getMe);
+console.log("Getme done!");
 router.get("/", getUsers);
 router.patch(
   "/me",

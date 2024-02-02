@@ -28,6 +28,7 @@ async function validateUserPermissions(req, res, next) {
  * @param {*} res The response object
  */
 module.exports.getUser = (req, res, next) => {
+  console.log("getUser", req.params);
   const { userId } = req.params;
   User.findById(userId)
     .orFail()
@@ -43,6 +44,7 @@ module.exports.getUser = (req, res, next) => {
  * @param {*} res The response object
  */
 module.exports.getUsers = (req, res, next) => {
+  console.log("getUsers", req.user);
   User.find({})
     .orFail()
     .then((users) => {
@@ -154,11 +156,11 @@ module.exports.login = (req, res, next) => {
  * @param {*} res The response object
  */
 module.exports.getMe = (req, res, next) => {
+  console.log("req.user at getMe", req.user);
   User.findById(req.user._id)
-    .orFail()
     .then((user) => {
       console.log("Response after getMe", user);
-      res.send({ data: user });
+      res.status(200).send({ data: user });
     })
     .catch((err) => next(catchError(err)));
 };
