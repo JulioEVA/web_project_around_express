@@ -13,12 +13,12 @@ const {
 /**
  * Validates the card ID.
  */
-function validateCardId() {
+function validateCardId(req, res, next) {
   return celebrate({
     params: Joi.object().keys({
       cardId: Joi.string().hex().length(24),
     }),
-  });
+  })(req, res, next);
 }
 
 router.get("/", getCards);
@@ -40,8 +40,8 @@ router.post(
   }),
   createCard,
 );
-router.delete("/:cardId", validateCardId, deleteCard);
 router.put("/:cardId/likes", validateCardId, likeCard);
 router.delete("/:cardId/likes", validateCardId, dislikeCard);
+router.delete("/:cardId", validateCardId, deleteCard);
 
 module.exports = router;
