@@ -9,20 +9,20 @@ const CastError = require("../errors/CastError");
  * @param {*} err The error object
  * @param {*} res The response object
  */
-module.exports.catchError = (err) => {
+module.exports.catchError = (err, req, res, next) => {
   switch (err.name) {
     case "ValidationError":
-      return new ValidationError(err.message);
+      return next(new ValidationError(err.message));
     case "CastError":
-      return new CastError("Invalid ID");
+      return next(new CastError("Invalid ID"));
     case "IncorrectCredentialsError":
-      return new IncorrectCredentialsError(err.message);
+      return next(new IncorrectCredentialsError(err.message));
     case "ForbiddenError":
-      return new ForbiddenError(err.message);
+      return next(new ForbiddenError(err.message));
     case "DocumentNotFoundError":
-      return new DocumentNotFoundError(err.message);
+      return next(new DocumentNotFoundError(err.message));
     default:
-      return err;
+      return next(err);
   }
 };
 
