@@ -13,7 +13,7 @@ module.exports.getCards = (req, res, next) => {
     .then((cards) => {
       res.send(cards);
     })
-    .catch((err) => next(catchError(err)));
+    .catch((err) => catchError(err, req, res, next));
 };
 
 /**
@@ -22,13 +22,13 @@ module.exports.getCards = (req, res, next) => {
  * @param {*} res The response object
  */
 module.exports.createCard = (req, res, next) => {
-  const { name, link, owner } = req.body;
+  const { name, link } = req.body;
 
-  Card.create({ name, link, owner })
+  Card.create({ name, link, owner: req.user._id })
     .then((card) => {
       res.send(card);
     })
-    .catch((err) => next(catchError(err)));
+    .catch((err) => catchError(err, req, res, next));
 };
 
 /**
@@ -45,14 +45,14 @@ module.exports.deleteCard = (req, res, next) => {
         throw new ForbiddenError("You can only delete your own cards");
       }
     })
-    .catch((err) => next(catchError(err)));
+    .catch((err) => catchError(err, req, res, next));
 
   Card.findByIdAndDelete(cardId)
     .orFail()
     .then((card) => {
       res.send(card);
     })
-    .catch((err) => next(catchError(err)));
+    .catch((err) => catchError(err, req, res, next));
 };
 
 /**
@@ -71,7 +71,7 @@ module.exports.likeCard = (req, res, next) => {
     .then((card) => {
       res.send(card);
     })
-    .catch((err) => next(catchError(err)));
+    .catch((err) => catchError(err, req, res, next));
 };
 
 /**
@@ -90,5 +90,5 @@ module.exports.dislikeCard = (req, res, next) => {
     .then((card) => {
       res.send(card);
     })
-    .catch((err) => next(catchError(err)));
+    .catch((err) => catchError(err, req, res, next));
 };
