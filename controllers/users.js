@@ -2,25 +2,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { catchError } = require("../utils/utils");
-const ForbiddenError = require("../errors/ForbiddenError");
 
 const { NODE_ENV, JWT_SECRET } = process.env;
-
-/**
- * Validates user permissions.
- * @param {*} req The request object
- * @param {*} res The response object
- */
-async function validateUserPermissions(req, res, next) {
-  return User.findById(req.user._id)
-    .orFail()
-    .then((user) => {
-      if (user._id !== req.user._id) {
-        throw new ForbiddenError("You can only update your own profile");
-      }
-    })
-    .catch((err) => next(catchError(err)));
-}
 
 /**
  * Gets an user by ID from the database
@@ -34,7 +17,7 @@ module.exports.getUser = (req, res, next) => {
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => next(catchError(err)));
+    .catch((err) => catchError(err, req, res));
 };
 
 /**
@@ -48,7 +31,7 @@ module.exports.getUsers = (req, res, next) => {
     .then((users) => {
       res.send(users);
     })
-    .catch((err) => next(catchError(err)));
+    .catch((err) => catchError(err, req, res));
 };
 
 /**
@@ -57,13 +40,7 @@ module.exports.getUsers = (req, res, next) => {
  * @param {*} res The response object
  */
 module.exports.createUser = (req, res, next) => {
-  const {
-    name = "Jacques Cousteau",
-    about = "Sailor, researcher",
-    avatar = "https://practicum-content.s3.us-west-1.amazonaws.com/resources/moved_avatar_1604080799.jpg",
-    email,
-    password,
-  } = req.body;
+  const { name, about, avatar, email, password } = req.body;
 
   bcrypt
     .hash(password, 10)
@@ -80,7 +57,7 @@ module.exports.createUser = (req, res, next) => {
         })
         .catch((err) => next(catchError(err)));
     })
-    .catch((err) => next(catchError(err)));
+    .catch((err) => catchError(err, req, res));
 };
 
 /**
@@ -91,8 +68,6 @@ module.exports.createUser = (req, res, next) => {
 module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
 
-  validateUserPermissions(req, res).catch((err) => next(catchError(err)));
-
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
@@ -102,7 +77,7 @@ module.exports.updateUser = (req, res, next) => {
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => next(catchError(err)));
+    .catch((err) => catchError(err, req, res));
 };
 
 /**
@@ -113,8 +88,6 @@ module.exports.updateUser = (req, res, next) => {
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
-  validateUserPermissions(req, res).then((err) => next(catchError(err)));
-
   User.findByIdAndUpdate(
     req.user._id,
     { avatar },
@@ -124,7 +97,7 @@ module.exports.updateAvatar = (req, res, next) => {
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => next(catchError(err)));
+    .catch((err) => catchError(err, req, res));
 };
 
 /**
@@ -145,7 +118,7 @@ module.exports.login = (req, res, next) => {
         token,
       });
     })
-    .catch((err) => next(catchError(err)));
+    .catch((err) => catchError(err, req, res));
 };
 
 /**
@@ -153,15 +126,11 @@ module.exports.login = (req, res, next) => {
  * @param {*} req The request object
  * @param {*} res The response object
  */
-module.exports.getMe = (req, res, next) => {
-  User.findById(req.user._id)
-    .orFail()
-    .then((data) => {
-      console.log("Response after getMe", data);
-      return data.json();
-    })
-    .then((user) => {
-      res.send(user);
-    })
-    .catch((err) => next(catchError(err)));
+module.exports.getMe = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    res.status(200).send({ data: user });
+  } catch (error) {
+    next(catchError(error, req, res));
+  }
 };

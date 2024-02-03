@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv").config();
 const { errors } = require("celebrate");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 const cards = require("./routes/cards");
 const users = require("./routes/users");
@@ -12,29 +13,12 @@ const auth = require("./middlewares/auth");
 const app = express();
 const { PORT = 3000 } = process.env;
 
-app.options(
-  "*",
-  cors({
-    // Define allowed origins, methods, and headers
-    origin:"http://localhost:3000",
-    methods: ["GET", "POST, PATCH, PUT, DELETE, OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
-    credentials: true,
-  }),
-);
-
-app.use(
-  cors({
-    // Define allowed origins, methods, and headers
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST, PATCH, PUT, DELETE, OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
-    credentials: true,
-  }),
-);
+app.use(cors());
+app.options("*", cors());
 
 mongoose.connect("mongodb://localhost:27017/aroundb");
-app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.use(requestLogger);
 
