@@ -8,12 +8,14 @@ const userSchema = mongoose.Schema({
     required: true,
     minlength: 2,
     maxlength: 30,
+    default: "Jacques Cousteau",
   },
   about: {
     type: String,
     required: true,
     minlength: 2,
     maxlength: 30,
+    default: "Sailor, researcher",
   },
   avatar: {
     type: String,
@@ -21,6 +23,8 @@ const userSchema = mongoose.Schema({
       validator: validateURL,
       message: "Invalid URL format",
     },
+    default:
+      "https://practicum-content.s3.us-west-1.amazonaws.com/resources/moved_avatar_1604080799.jpg",
   },
   email: {
     type: String,
